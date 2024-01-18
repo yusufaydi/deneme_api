@@ -10,6 +10,9 @@
     <h1>Deneme API</h1>
     <input type="button" onclick="prev()" value="önceki" />
     <input type="button" onclick="next()" value="sonraki" />
+    <span id="current_page"></span>
+    <input type="text" id="searchText" onkeydown="keydown(event)" />
+    <input type="button" onclick="search()" value="ara" />
     <div class="container">
         <!-- <div class="character-card">
             <img src="https://rickandmortyapi.com/api/character/avatar/22.jpeg" />
