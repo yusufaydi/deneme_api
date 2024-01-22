@@ -33,40 +33,24 @@ let cacheObject = {
 
 let data = {
 
-    getData: function (page = 1, cb) {
-        //check cachedata
-        if(cacheObject.checkData(page)){
-            console.log("cache hit");
-            cb(cacheObject.getData(page));
-            return;
-        }
+    getDataAsync :async function(page=1){
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+          };
+          try {
+            let var1  = await fetch("http://gbpanalyzer.com/RickAndMorty/list?page="+page, requestOptions)
+            .then(response => response.text());
+            
+            let dataJson = JSON.parse(var1);
+            let data_arr = dataJson.data;
 
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
-
-        xhr.addEventListener("readystatechange", function() {
-            if(this.readyState === 4) {
-                console.log("api hit");
-                let tmp_obj = JSON.parse(this.responseText);
-                cacheObject.addData(page, tmp_obj.results);
-                cb(tmp_obj.results);
-            }
-        });
-
-        xhr.open("GET", `http://localhost:5500/data${page}.json`);
-        xhr.send();
-    },
-    getDataAsync : function(page=1){
-        return new Promise((resolve, reject )=> {
-            try {
-                data.getData(page, function(result){
-                    resolve(result);
-                });
-            } catch (error) {
-                console.log('error', error);
-                reject(error);
-            }
-        });
+            cacheObject.addData(page, data_arr)
+            
+            return data_arr;
+          } catch (error) {
+            console.log("api error:", error);
+          }
     },
     filterData: function (text) {
         let all_data = cacheObject.getAllData();
@@ -130,9 +114,16 @@ function search(){
     container.fillContainerWithData(tmp_arr);
 }
 
-
-
 //document events
 document.addEventListener('DOMContentLoaded',async function () {
     await container.generateMylist();
+});
+
+document.addEventListener('keydown',(e) => {
+    e = e || window.event;
+    if (e.keyCode === 37) {
+      prev();
+    } else if (e.keyCode === 39) {
+      next()
+    }
 });
